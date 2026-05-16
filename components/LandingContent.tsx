@@ -42,10 +42,25 @@ export default function LandingContent({ session }: { session: any }) {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
     const [searchId, setSearchId] = useState("")
     const [isSearchOpen, setIsSearchOpen] = useState(false)
-    const [activeStep, setActiveStep] = useState(1)
+    const [activeStep, setActiveStep] = useState(0)
     const profileRef = useRef<HTMLDivElement>(null)
+    const howItWorksRef = useRef<HTMLElement>(null)
     const { scrollY } = useScroll()
+    const { scrollYProgress: howItWorksScrollProgress } = useScroll({
+        target: howItWorksRef,
+        offset: ["start 60%", "end 40%"]
+    })
     const router = useRouter()
+
+    useEffect(() => {
+        return howItWorksScrollProgress.on("change", (latest) => {
+            const stepCount = STEPS.length;
+            let step = Math.floor(latest * stepCount);
+            if (step >= stepCount) step = stepCount - 1;
+            if (step < 0) step = 0;
+            setActiveStep(step);
+        });
+    }, [howItWorksScrollProgress])
 
     const navBg = useTransform(scrollY, [0, 50], ["rgba(3,3,3,0)", "rgba(3,3,3,0.93)"])
     const navBorder = useTransform(scrollY, [0, 50], ["rgba(34,34,34,0)", "rgba(34,34,34,1)"])
@@ -229,7 +244,7 @@ export default function LandingContent({ session }: { session: any }) {
                 </section>
 
                 {/* ─── How It Works ─── */}
-                <section id="how-it-works" className="py-28 px-6 bg-[rgba(6,6,6,0.6)] z-10 relative">
+                <section id="how-it-works" ref={howItWorksRef} className="py-28 px-6 bg-[rgba(6,6,6,0.6)] z-10 relative">
                     <div className="max-w-6xl mx-auto">
                         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-16">
                             <span className="section-label inline-flex">Workflow</span>
@@ -252,8 +267,7 @@ export default function LandingContent({ session }: { session: any }) {
                                     return (
                                         <div 
                                             key={s.n} 
-                                            className="relative flex-1 flex flex-row md:flex-col gap-6 md:gap-0 group cursor-pointer items-start md:items-center text-left md:text-center"
-                                            onMouseEnter={() => setActiveStep(i)}
+                                            className="relative flex-1 flex flex-row md:flex-col gap-6 md:gap-0 group items-start md:items-center text-left md:text-center"
                                         >
                                             {/* Visual Connecting Line (Mobile) */}
                                             {!isLast && (
