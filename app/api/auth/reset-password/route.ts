@@ -1,13 +1,23 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import bcrypt from "bcryptjs";
+import { ZodError } from "zod";
+import { validateResetPassword } from "@/lib/validation/auth";
 
 export async function POST(req: Request) {
     try {
-        const { token, password } = await req.json();
+        const body = await req.json();
 
-        if (!token || !password) {
-            return NextResponse.json({ message: "Token and password are required" }, { status: 400 });
+        try {
+            var { token, password } = validateResetPassword(body) as {
+                token: string;
+                password: string;
+            };
+        } catch (err) {
+            if (err instanceof ZodError) {
+                return NextResponse.json({ message: "Invalid input", errors: err.errors }, { status: 400 });
+            }
+            throw err;
         }
 
         const user = await prisma.user.findFirst({

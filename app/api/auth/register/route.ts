@@ -1,15 +1,26 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import bcrypt from "bcryptjs";
+import { ZodError } from "zod";
+import { validateRegister } from "@/lib/validation/auth";
 
 export const dynamic = "force-dynamic";
 
 export async function POST(req: Request) {
     try {
-        const { email, password, name } = await req.json();
+        const body = await req.json();
 
-        if (!email || !password) {
-            return NextResponse.json({ message: "Email and password are required" }, { status: 400 });
+        try {
+            var { email, password, name } = validateRegister(body) as {
+                email: string;
+                password: string;
+                name?: string;
+            };
+        } catch (err) {
+            if (err instanceof ZodError) {
+                return NextResponse.json({ message: "Invalid input", errors: err.errors }, { status: 400 });
+            }
+            throw err;
         }
 
         // Check if user already exists
