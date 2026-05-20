@@ -82,8 +82,8 @@ export default function LandingContent({ session }: { session: any }) {
             {/* ─── Navbar ─── */}
             <motion.header style={{ backgroundColor: navBg, borderBottomColor: navBorder, borderBottomWidth: 1, borderBottomStyle: 'solid' }}
                 className="fixed top-0 z-50 w-full backdrop-blur-xl">
-                <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-                    <Link href="/" className="flex items-center gap-2 group">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-2">
+                    <Link href="/" className="flex items-center gap-2 group shrink-0">
                         <img src="/vuralogo.png" alt="Vura Logo" className="w-10 h-10 object-contain transition-transform group-hover:scale-105" />
                         <span className="text-xl font-black tracking-widest uppercase text-white">VURA</span>
                     </Link>
@@ -95,7 +95,7 @@ export default function LandingContent({ session }: { session: any }) {
                         <Link href="/docs" className="text-[var(--color-neon-primary)] hover:text-white transition-colors">API Docs</Link>
                     </nav>
 
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2 sm:gap-4">
                         <div className="relative">
                             <button onClick={() => setIsSearchOpen(!isSearchOpen)} className="text-[var(--color-neon-muted)] hover:text-white transition-colors p-2 flex items-center justify-center rounded-full hover:bg-white/5">
                                 <Search className="w-4 h-4" />
@@ -156,7 +156,7 @@ export default function LandingContent({ session }: { session: any }) {
                                 <Link href="/register" className="btn-primary py-2 px-5 text-sm flex items-center gap-1.5">Get Started <ArrowRight className="w-3.5 h-3.5" /></Link>
                             </div>
                         )}
-                        <button className="md:hidden text-white p-2" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
+                        <button className="md:hidden text-white p-2 shrink-0" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
                             {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
                         </button>
                     </div>
