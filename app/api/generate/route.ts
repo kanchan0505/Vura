@@ -27,6 +27,7 @@ export async function POST(req: NextRequest) {
 
         const templateFile = formData.get("template") as File | null;
         const datasetFile = formData.get("dataset") as File | null;
+        const eventIdString = formData.get("eventId") as string | null;
 
         if (!templateFile || !datasetFile) {
             return NextResponse.json({ error: "Missing template or dataset file." }, { status: 400 });
@@ -36,13 +37,68 @@ export async function POST(req: NextRequest) {
         const settingsString = formData.get("settings") as string | null;
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         let settings: any = null;
-        if (settingsString) {
+
+        // If eventId provided, try to load template from database
+        if (eventIdString && session?.user) {
+            try {
+                const dbTemplate = await prisma.template.findUnique({
+                    where: { eventId: eventIdString },
+                });
+                if (dbTemplate) {
+                    // Convert template fields to settings format
+                    // Template fields: { id, label, x, y, fontSize, color, align }
+                    // Settings format: { name, course, issueDate, etc. with { enabled, x, y, size, hex } }
+                    const templateFields = dbTemplate.fields as Array<{
+                        id: string;
+                        label: string;
+                        x: number;
+                        y: number;
+                        fontSize: number;
+                        color: string;
+                        align: string;
+                    }>;
+
+                    settings = {
+                        name: {
+                            enabled: templateFields.some(f => f.id === 'name'),
+                            x: templateFields.find(f => f.id === 'name')?.x ?? 50,
+                            y: templateFields.find(f => f.id === 'name')?.y ?? 50,
+                            size: templateFields.find(f => f.id === 'name')?.fontSize ?? 32,
+                            hex: templateFields.find(f => f.id === 'name')?.color ?? '#000000',
+                            fontStyle: 'bold',
+                        },
+                        course: {
+                            enabled: templateFields.some(f => f.id === 'course'),
+                            x: templateFields.find(f => f.id === 'course')?.x ?? 50,
+                            y: templateFields.find(f => f.id === 'course')?.y ?? 50,
+                            size: templateFields.find(f => f.id === 'course')?.fontSize ?? 20,
+                            hex: templateFields.find(f => f.id === 'course')?.color ?? '#333333',
+                            fontStyle: 'normal',
+                        },
+                        issueDate: {
+                            enabled: templateFields.some(f => f.id === 'date'),
+                            x: templateFields.find(f => f.id === 'date')?.x ?? 50,
+                            y: templateFields.find(f => f.id === 'date')?.y ?? 50,
+                            size: templateFields.find(f => f.id === 'date')?.fontSize ?? 14,
+                            hex: templateFields.find(f => f.id === 'date')?.color ?? '#000000',
+                            fontStyle: 'normal',
+                        },
+                    };
+                }
+            } catch {
+                // Silently ignore template loading errors, fall back to formData settings
+            }
+        }
+
+        // If no template loaded from DB, try to parse settings from formData
+        if (!settings && settingsString) {
             try {
                 settings = JSON.parse(settingsString);
             } catch {
                 return NextResponse.json({ error: "Invalid settings JSON" }, { status: 400 });
             }
         }
+
         const saveToDb = formData.get("saveToDb") !== "false";
 
         if (saveToDb && (!session || !session.user)) {
