@@ -22,6 +22,22 @@ export default async function TemplatesPage() {
     orderBy: { createdAt: "desc" },
   })
 
+  const safeEvents = events
+    .filter((event) => Boolean(event.id))
+    .map((event) => ({
+    id: event.id,
+    name: event.name,
+    createdAt: event.createdAt,
+    template: event.template
+      ? {
+          name: event.template.name,
+          bgImageUrl: event.template.bgImageUrl,
+          fields: Array.isArray(event.template.fields) ? event.template.fields : [],
+          eventId: event.template.eventId,
+        }
+      : null,
+  }))
+
   return (
     <div className="space-y-6">
       <div>
@@ -38,8 +54,8 @@ export default async function TemplatesPage() {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-          {events.map((event) => (
-            <TemplateCard key={event.id} event={event as any} />
+          {safeEvents.map((event) => (
+            <TemplateCard key={event.id} event={event} />
           ))}
         </div>
       )}

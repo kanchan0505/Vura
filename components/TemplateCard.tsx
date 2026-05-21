@@ -12,12 +12,14 @@ interface TemplateCardProps {
       name: string
       bgImageUrl: string
       fields: any[]
+      eventId?: string
     } | null
   }
 }
 
 export default function TemplateCard({ event }: TemplateCardProps) {
   const [deleting, setDeleting] = useState(false)
+  const eventId = event.id || event.template?.eventId
 
   const handleDelete = async () => {
     if (!confirm(`Delete template "${event.template?.name}"?`)) return
@@ -117,7 +119,7 @@ export default function TemplateCard({ event }: TemplateCardProps) {
           {event.template ? (
             <>
               <Link
-                href={`/dashboard/templates/new/${event.id}`}
+                href={eventId ? `/dashboard/templates/new/${eventId}` : "/dashboard/templates"}
                 className="flex-1 text-center text-sm font-medium border border-white/15 hover:border-white/30 text-white rounded-lg px-3 py-2 transition-colors"
               >
                 Edit
@@ -132,7 +134,7 @@ export default function TemplateCard({ event }: TemplateCardProps) {
             </>
           ) : (
             <Link
-              href={`/dashboard/templates/new/${event.id}`}
+              href={eventId ? `/dashboard/templates/new/${eventId}` : "/dashboard/templates"}
               className="w-full text-center text-sm font-semibold bg-[var(--color-neon-primary)] hover:bg-[#00ffaa] text-black rounded-lg px-4 py-2.5 transition-colors"
             >
               Create Template
