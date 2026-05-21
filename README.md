@@ -109,6 +109,8 @@ DATABASE_URL="postgresql://..."
 # Auth
 NEXTAUTH_SECRET="your-secret"
 NEXTAUTH_URL="http://localhost:3000"
+GOOGLE_CLIENT_ID="your-google-client-id"
+GOOGLE_CLIENT_SECRET="your-google-client-secret"
 
 # AWS S3
 AWS_ACCESS_KEY_ID="your-access-key"
@@ -168,6 +170,16 @@ Open [http://localhost:3000](http://localhost:3000).
 ## Live Demo
 
 🔗 [vurakit.vercel.app](https://vurakit.vercel.app/)
+
+---
+
+---
+
+## 🚀 GSSoC '26 Project
+**Vura** has been officially selected for **GirlScript Summer of Code 2026**! 🎉  
+Check out our official project details and tracking here: **[Vura on GSSoC Portal](https://gssoc.girlscript.org/projects/omn7%2Fvura)**
+
+> **Note to Contributors:** Please review our [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines on issue assignments, tech stack specifications, and design system requirements before opening a Pull Request.
 
 ---
 
